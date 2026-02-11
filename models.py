@@ -8,5 +8,6 @@ class ChildElement(BaseModel):
 
 class Svg(BaseModel):
     name: str
+    tsx_relative_path: str | None = None
     attrib: dict[str, str]
     elements: list[ChildElement]

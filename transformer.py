@@ -14,13 +14,25 @@ def gen_indent(level: int) -> str:
     return " " * (DEFAULT_INDENT_BY * level)
 
 
-def generate_index_file(component_names: list[str]) -> str:
-    component_names.sort()
+def generate_index_file(components: list[Svg]) -> str:
+    components.sort(key=lambda x: x.name)
 
     buffer = StringIO()
 
-    for name in component_names:
-        buffer.write(f"export * from './{name}';\n")
+    buffer.write(
+        "/** biome-ignore-all assist/source/organizeImports: Auto generated */\n"
+    )
+    buffer.write("\n")
+
+    for comp in components:
+        buffer.write("export * from './")
+
+        if comp.tsx_relative_path is not None and comp.tsx_relative_path != ".":
+            buffer.write(str(comp.tsx_relative_path))
+            buffer.write("/")
+
+        buffer.write(f"{comp.name}")
+        buffer.write("';\n")
 
     content = buffer.getvalue()
     buffer.close()
