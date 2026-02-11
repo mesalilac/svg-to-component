@@ -1,0 +1,10 @@
+[project]
+name = "svg-to-component"
+version = "0.1.0"
+description = "Convert svg icons to SolidJS components"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "click>=8.3.1",
+    "pydantic>=2.12.5",
+]
