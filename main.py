@@ -35,7 +35,9 @@ from transformer import parse_svg, build_tsx_component, generate_index_file
     help="Path to directory to output component files",
     required=True,
 )
-@click.option("--no-index-ts", "-x", is_flag=True, help="Generate index.ts file")
+@click.option(
+    "--no-index-ts", "-x", is_flag=True, help="Don't generate a index.ts file"
+)
 @click.option(
     "--header",
     "-h",
