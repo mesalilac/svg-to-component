@@ -27,8 +27,8 @@ def generate_index_file(components: list[Svg]) -> str:
     for comp in components:
         buffer.write("export * from './")
 
-        if comp.tsx_relative_path is not None and comp.tsx_relative_path != ".":
-            buffer.write(str(comp.tsx_relative_path))
+        if comp.tsx_relative_path != ".":
+            buffer.write(comp.tsx_relative_path)
             buffer.write("/")
 
         buffer.write(f"{comp.name}")
@@ -82,6 +82,9 @@ def build_tsx_component(svg: Svg, header: str | None) -> str:
 
     buffer.write("import type { JSX } from 'solid-js';\n")
     buffer.write("\n")
+
+    if svg.tsx_relative_path != ".":
+        buffer.write(f"/** {svg.tsx_relative_path} */\n")
     buffer.write(
         f"export const {svg.name} = (props: JSX.SvgSVGAttributes<SVGSVGElement>) => {{\n"
     )

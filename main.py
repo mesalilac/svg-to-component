@@ -67,19 +67,16 @@ def main(
     for file_path in input_dir.rglob("*.svg"):
         svg = parse_svg(file_path)
 
-        tsx_component = build_tsx_component(svg, header)
         tsx_file_relative_path = file_path.parent.relative_to(input_dir)
-
         component_path: Path = output_dir / tsx_file_relative_path / f"{svg.name}.tsx"
 
         os.makedirs(component_path.parent, exist_ok=True)
 
-        svg.tsx_relative_path = tsx_file_relative_path
+        svg.tsx_relative_path = str(tsx_file_relative_path)
 
         svgs.append(svg)
 
-        print(component_path)
-        print(tsx_file_relative_path)
+        tsx_component = build_tsx_component(svg, header)
 
         if component_path.exists() and not force:
             if verbose:
