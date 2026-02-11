@@ -14,9 +14,7 @@ def gen_indent(level: int) -> str:
     return " " * (DEFAULT_INDENT_BY * level)
 
 
-def generate_index_file(components: list[Svg]) -> str:
-    components.sort(key=lambda x: x.name)
-
+def generate_index_file(svgs: list[Svg]) -> str:
     buffer = StringIO()
 
     buffer.write(
@@ -24,14 +22,14 @@ def generate_index_file(components: list[Svg]) -> str:
     )
     buffer.write("\n")
 
-    for comp in components:
+    for svg_item in svgs:
         buffer.write("export * from './")
 
-        if comp.tsx_relative_path != ".":
-            buffer.write(comp.tsx_relative_path)
+        if svg_item.relative_path != ".":
+            buffer.write(svg_item.relative_path)
             buffer.write("/")
 
-        buffer.write(f"{comp.name}")
+        buffer.write(f"{svg_item.name}")
         buffer.write("';\n")
 
     content = buffer.getvalue()
@@ -39,9 +37,9 @@ def generate_index_file(components: list[Svg]) -> str:
     return content
 
 
-def parse_svg(file_path: Path) -> Svg:
-    name = toPascalCase(file_path.stem)
-    tree = ET.parse(file_path)
+def parse_svg(source_svg_path: Path) -> Svg:
+    name = toPascalCase(source_svg_path.stem)
+    tree = ET.parse(source_svg_path)
     root = tree.getroot()
     elements: list[ChildElement] = []
 
@@ -83,8 +81,8 @@ def build_tsx_component(svg: Svg, header: str | None) -> str:
     buffer.write("import type { JSX } from 'solid-js';\n")
     buffer.write("\n")
 
-    if svg.tsx_relative_path != ".":
-        buffer.write(f"/** {svg.tsx_relative_path} */\n")
+    if svg.relative_path != ".":
+        buffer.write(f"/** {svg.relative_path} */\n")
     buffer.write(
         f"export const {svg.name} = (props: JSX.SvgSVGAttributes<SVGSVGElement>) => {{\n"
     )

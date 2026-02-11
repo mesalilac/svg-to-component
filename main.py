@@ -64,32 +64,32 @@ def main(
         )
         os.makedirs(output_dir)
 
-    for file_path in input_dir.rglob("*.svg"):
-        svg = parse_svg(file_path)
+    for source_svg_path in input_dir.rglob("*.svg"):
+        svg = parse_svg(source_svg_path)
 
-        tsx_file_relative_path = file_path.parent.relative_to(input_dir)
-        component_path: Path = output_dir / tsx_file_relative_path / f"{svg.name}.tsx"
+        relative_dir = source_svg_path.parent.relative_to(input_dir).as_posix()
+        dest_tsx_path: Path = output_dir / relative_dir / f"{svg.name}.tsx"
 
-        os.makedirs(component_path.parent, exist_ok=True)
+        os.makedirs(dest_tsx_path.parent, exist_ok=True)
 
-        svg.tsx_relative_path = str(tsx_file_relative_path)
+        svg.relative_path = relative_dir
 
         svgs.append(svg)
 
-        tsx_component = build_tsx_component(svg, header)
+        tsx_code = build_tsx_component(svg, header)
 
-        if component_path.exists() and not force:
+        if dest_tsx_path.exists() and not force:
             if verbose:
                 click.echo(
                     f"Component {style(svg.name, fg='yellow', bold=True)} already exists. {style('Use --force to overwrite', fg='bright_black')}"
                 )
             continue
 
-        component_path.write_text(tsx_component)
+        dest_tsx_path.write_text(tsx_code)
 
         if verbose:
             click.echo(
-                f"Component written to {style(component_path.name, fg='green', bold=True)}"
+                f"Component written to {style(dest_tsx_path.name, fg='green', bold=True)}"
             )
 
     if not no_index_ts:
