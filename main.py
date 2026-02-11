@@ -46,6 +46,7 @@ from transformer import parse_svg, build_tsx_component, generate_index_file
     required=False,
 )
 @click.option("--force", "-f", is_flag=True, help="Force overwrite existing files")
+@click.option("--flat", "-F", is_flag=True, help="Flatten icons in output directory")
 @click.option("--verbose", "-v", is_flag=True, help="Enable verbose output")
 def main(
     input_dir: Path,
@@ -53,6 +54,7 @@ def main(
     no_index_ts,
     header: str | None,
     force: bool,
+    flat: bool,
     verbose: bool,
 ):
 
@@ -67,7 +69,11 @@ def main(
     for source_svg_path in input_dir.rglob("*.svg"):
         svg = parse_svg(source_svg_path)
 
-        relative_dir = source_svg_path.parent.relative_to(input_dir).as_posix()
+        if flat:
+            relative_dir = "."
+        else:
+            relative_dir = source_svg_path.parent.relative_to(input_dir).as_posix()
+
         dest_tsx_path: Path = output_dir / relative_dir / f"{svg.name}.tsx"
 
         os.makedirs(dest_tsx_path.parent, exist_ok=True)
