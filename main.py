@@ -4,6 +4,7 @@ import click
 from click import style
 from pathlib import Path
 from transformer import parse_svg, build_tsx_component, generate_index_file
+import shutil
 
 
 @click.command()
@@ -47,6 +48,9 @@ from transformer import parse_svg, build_tsx_component, generate_index_file
 )
 @click.option("--force", "-f", is_flag=True, help="Force overwrite existing files")
 @click.option("--flat", "-F", is_flag=True, help="Flatten icons in output directory")
+@click.option(
+    "--clean", "-c", is_flag=True, help="Remove and recreate output directory"
+)
 @click.option("--verbose", "-v", is_flag=True, help="Enable verbose output")
 def main(
     input_dir: Path,
@@ -55,15 +59,23 @@ def main(
     header: str | None,
     force: bool,
     flat: bool,
+    clean: bool,
     verbose: bool,
 ):
 
     svgs: list[Svg] = []
 
+    if clean and output_dir.exists():
+        click.echo(
+            f"Deleting output directory {style(output_dir, fg='red', bold=True)}"
+        )
+        shutil.rmtree(output_dir)
+
     if not output_dir.exists():
         click.echo(
-            f"Creating output directory {style(output_dir, fg='cyan', bold=True)}"
+            f"Creating output directory {style(output_dir, fg='green', bold=True)}"
         )
+        click.echo()
         os.makedirs(output_dir)
 
     for source_svg_path in input_dir.rglob("*.svg"):
@@ -103,8 +115,9 @@ def main(
         index_ts_content = generate_index_file(svgs)
         index_ts_path.write_text(index_ts_content)
         if verbose:
+            click.echo()
             click.echo(
-                f"File {style('Index.ts', fg='green', bold=True)} written to {style(index_ts_path, fg='cyan', bold=True)}"
+                f"File {style('Index.ts', fg='green', bold=True)} written to {style(index_ts_path, fg='green', bold=True)}"
             )
 
 
