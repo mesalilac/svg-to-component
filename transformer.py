@@ -94,11 +94,15 @@ def build_tsx_component(svg: Svg, header: str | None) -> str:
     buffer.write("import type { JSX } from 'solid-js';\n")
     buffer.write("\n")
 
+    buffer.write("interface IconProps extends JSX.SvgSVGAttributes<SVGSVGElement> {\n")
+    buffer.write(gen_indent(1))
+    buffer.write("size?: string;\n")
+    buffer.write("}\n")
+    buffer.write("\n")
+
     if svg.relative_path != ".":
         buffer.write(f"/** {svg.relative_path} */\n")
-    buffer.write(
-        f"export const {svg.name} = (props: JSX.SvgSVGAttributes<SVGSVGElement>) => {{\n"
-    )
+    buffer.write(f"export const {svg.name} = (props: IconProps) => {{\n")
 
     buffer.write(gen_indent(1))
     buffer.write("return (\n")
@@ -114,7 +118,10 @@ def build_tsx_component(svg: Svg, header: str | None) -> str:
 
     for attr in svg.attrib:
         buffer.write(gen_indent(3))
-        buffer.write(f"{attr}='{svg.attrib[attr]}'\n")
+        if attr == "width" or attr == "height":
+            buffer.write(f"{attr}={{props.size || '{svg.attrib[attr]}'}}\n")
+        else:
+            buffer.write(f"{attr}='{svg.attrib[attr]}'\n")
 
     buffer.write(gen_indent(3))
     buffer.write("{...props}\n")
