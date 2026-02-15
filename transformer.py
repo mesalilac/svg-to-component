@@ -54,6 +54,19 @@ def parse_svg(source_svg_path: Path) -> Svg:
 
         elements.append(ChildElement(tag=tag, attrib=e.attrib))
 
+    width = root.attrib.get("width")
+    height = root.attrib.get("height")
+
+    if width and height:
+        if width == height:
+            root.attrib["width"] = "1em"
+            root.attrib["height"] = "1em"
+        else:
+            new_width: float = float(width) / float(height)
+
+            root.attrib["width"] = f"{new_width}em"
+            root.attrib["height"] = "1em"
+
     return Svg(
         name=f"Icon{name}",
         attrib=root.attrib,
