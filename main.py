@@ -66,16 +66,18 @@ def main(
     svgs: list[Svg] = []
 
     if clean and output_dir.exists():
-        click.echo(
-            f"Deleting output directory {style(output_dir, fg='red', bold=True)}"
-        )
+        if verbose:
+            click.echo(
+                f"Deleting output directory {style(output_dir, fg='red', bold=True)}"
+            )
         shutil.rmtree(output_dir)
 
     if not output_dir.exists():
-        click.echo(
-            f"Creating output directory {style(output_dir, fg='green', bold=True)}"
-        )
-        click.echo()
+        if verbose:
+            click.echo(
+                f"Creating output directory {style(output_dir, fg='green', bold=True)}"
+            )
+            click.echo()
         os.makedirs(output_dir)
 
     for source_svg_path in input_dir.rglob("*.svg"):
