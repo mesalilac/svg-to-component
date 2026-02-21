@@ -28,10 +28,8 @@ Options:
 ### Svg file
 
 ```xml
-<svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path
-        d="M5 8H2.5V10.5M7 4H9.5V1.5M2.2915 4.5017C2.57185 3.80783 3.04122 3.20652 3.64628 2.76611C4.25133 2.32571 4.96843 2.06376 5.71488 2.01025C6.46133 1.95675 7.20737 2.1137 7.86905 2.46331C8.53074 2.81291 9.08061 3.34127 9.45706 3.98806M9.70878 7.49854C9.42843 8.19241 8.95906 8.79372 8.354 9.23412C7.74895 9.67453 7.03258 9.93614 6.28613 9.98965C5.53968 10.0432 4.79303 9.88623 4.13135 9.53662C3.46966 9.18702 2.91941 8.65876 2.54297 8.01196"
-        stroke="#F2F2F2" stroke-linecap="round" stroke-linejoin="round" />
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M6 12H12M12 12H18M12 12V18M12 12V6" stroke="#F2F2F2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
 ```
 
@@ -44,20 +42,37 @@ Options:
 
 import type { JSX } from 'solid-js';
 
-export const IconArrowsReload01 = (props: JSX.SvgSVGAttributes<SVGSVGElement>) => {
+interface IconProps extends JSX.SvgSVGAttributes<SVGSVGElement> {
+    size?: string;
+}
+
+/**
+ * Edit
+ * ```
+ *            ██           
+ *            ██           
+ *            ██           
+ *       ████████████      
+ *            ██           
+ *            ██           
+ *            ██           
+ * ```
+ */
+export const IconAddPlus = (props: IconProps) => {
     return (
         <svg
             role='img'
-            aria-label='Arrows Reload01'
-            width='12'
-            height='12'
-            viewBox='0 0 12 12'
+            aria-label='Add Plus'
+            width={props.size || '1em'}
+            height={props.size || '1em'}
+            viewBox='0 0 24 24'
             fill='none'
             {...props}
         >
             <path
-                d='M5 8H2.5V10.5M7 4H9.5V1.5M2.2915 4.5017C2.57185 3.80783 3.04122 3.20652 3.64628 2.76611C4.25133 2.32571 4.96843 2.06376 5.71488 2.01025C6.46133 1.95675 7.20737 2.1137 7.86905 2.46331C8.53074 2.81291 9.08061 3.34127 9.45706 3.98806M9.70878 7.49854C9.42843 8.19241 8.95906 8.79372 8.354 9.23412C7.74895 9.67453 7.03258 9.93614 6.28613 9.98965C5.53968 10.0432 4.79303 9.88623 4.13135 9.53662C3.46966 9.18702 2.91941 8.65876 2.54297 8.01196'
+                d='M6 12H12M12 12H18M12 12V18M12 12V6'
                 stroke='currentColor'
+                stroke-width='2'
                 stroke-linecap='round'
                 stroke-linejoin='round'
             />
