@@ -10,6 +10,8 @@ DEFAULT_INDENT_BY = 4
 SVG_NAMESPACE = "http://www.w3.org/2000/svg"
 ET.register_namespace("", SVG_NAMESPACE)
 
+ONE_SPACE_INDENT = " "
+
 
 def gen_indent(level: int) -> str:
     return " " * (DEFAULT_INDENT_BY * level)
@@ -106,23 +108,23 @@ def build_tsx_component(svg: Svg, header: str | None) -> str:
 
     buffer.write("/**\n")
     if svg.relative_path != ".":
-        buffer.write(gen_indent(1))
+        buffer.write(ONE_SPACE_INDENT)
         buffer.write(f"* {svg.relative_path}\n")
 
-    buffer.write(gen_indent(1))
+    buffer.write(ONE_SPACE_INDENT)
     buffer.write("* ```\n")
 
     for ascii_line in svg.ascii.splitlines():
         if ascii_line.strip() == "":
             continue
 
-        buffer.write(gen_indent(1))
+        buffer.write(ONE_SPACE_INDENT)
         buffer.write(f"* {ascii_line}\n")
 
-    buffer.write(gen_indent(1))
+    buffer.write(ONE_SPACE_INDENT)
     buffer.write("* ```\n")
 
-    buffer.write(gen_indent(1))
+    buffer.write(ONE_SPACE_INDENT)
     buffer.write("*/\n")
 
     buffer.write(f"export const {svg.name} = (props: IconProps) => {{\n")
