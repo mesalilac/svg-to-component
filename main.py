@@ -55,7 +55,7 @@ import shutil
 def main(
     input_dir: Path,
     output_dir: Path,
-    no_index_ts,
+    no_index_ts: bool,
     header: str | None,
     force: bool,
     flat: bool,
@@ -105,7 +105,7 @@ def main(
                 )
             continue
 
-        dest_tsx_path.write_text(tsx_code)
+        dest_tsx_path.write_text(tsx_code, encoding="utf-8")
 
         if verbose:
             click.echo(

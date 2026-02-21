@@ -2,6 +2,7 @@ from pathlib import Path
 from io import StringIO
 from models import Svg, ChildElement
 import xml.etree.ElementTree as ET
+from ascii import svg_to_ascii
 from utils import toPascalCase, toHumanReadableLabel
 
 DEFAULT_INDENT_BY = 4
@@ -67,9 +68,12 @@ def parse_svg(source_svg_path: Path) -> Svg:
             root.attrib["width"] = f"{new_width}em"
             root.attrib["height"] = "1em"
 
+    ascii = svg_to_ascii(source_svg_path, width=24)
+
     return Svg(
         name=f"Icon{name}",
         attrib=root.attrib,
+        ascii=ascii,
         elements=elements,
     )
 
@@ -100,8 +104,27 @@ def build_tsx_component(svg: Svg, header: str | None) -> str:
     buffer.write("}\n")
     buffer.write("\n")
 
+    buffer.write("/**\n")
     if svg.relative_path != ".":
-        buffer.write(f"/** {svg.relative_path} */\n")
+        buffer.write(gen_indent(1))
+        buffer.write(f"* {svg.relative_path}\n")
+
+    buffer.write(gen_indent(1))
+    buffer.write("* ```\n")
+
+    for ascii_line in svg.ascii.splitlines():
+        if ascii_line.strip() == "":
+            continue
+
+        buffer.write(gen_indent(1))
+        buffer.write(f"* {ascii_line}\n")
+
+    buffer.write(gen_indent(1))
+    buffer.write("* ```\n")
+
+    buffer.write(gen_indent(1))
+    buffer.write("*/\n")
+
     buffer.write(f"export const {svg.name} = (props: IconProps) => {{\n")
 
     buffer.write(gen_indent(1))
