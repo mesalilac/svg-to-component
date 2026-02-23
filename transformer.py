@@ -149,6 +149,9 @@ def build_tsx_component(svg: Svg, header: str | None) -> str:
             buffer.write(f"{attr}='{svg.attrib[attr]}'\n")
 
     buffer.write(gen_indent(3))
+    buffer.write("ref={props.ref}\n")
+
+    buffer.write(gen_indent(3))
     buffer.write("{...props}\n")
 
     buffer.write(gen_indent(2))
