@@ -51,7 +51,6 @@ import shutil
 @click.option(
     "--clean", "-c", is_flag=True, help="Remove and recreate output directory"
 )
-@click.option("--verbose", "-v", is_flag=True, help="Enable verbose output")
 def main(
     input_dir: Path,
     output_dir: Path,
@@ -60,24 +59,21 @@ def main(
     force: bool,
     flat: bool,
     clean: bool,
-    verbose: bool,
 ):
 
     svgs: list[Svg] = []
 
     if clean and output_dir.exists():
-        if verbose:
-            click.echo(
-                f"Deleting output directory {style(output_dir, fg='red', bold=True)}"
-            )
+        click.echo(
+            f"Deleting output directory {style(output_dir, fg='red', bold=True)}"
+        )
         shutil.rmtree(output_dir)
 
     if not output_dir.exists():
-        if verbose:
-            click.echo(
-                f"Creating output directory {style(output_dir, fg='green', bold=True)}"
-            )
-            click.echo()
+        click.echo(
+            f"Creating output directory {style(output_dir, fg='green', bold=True)}"
+        )
+        click.echo()
         os.makedirs(output_dir)
 
     for source_svg_path in input_dir.rglob("*.svg"):
@@ -99,28 +95,25 @@ def main(
         tsx_code = build_tsx_component(svg, header)
 
         if dest_tsx_path.exists() and not force:
-            if verbose:
-                click.echo(
-                    f"Component {style(svg.name, fg='yellow', bold=True)} already exists. {style('Use --force to overwrite', fg='bright_black')}"
-                )
+            click.echo(
+                f"Component {style(svg.name, fg='yellow', bold=True)} already exists. {style('Use --force to overwrite', fg='bright_black')}"
+            )
             continue
 
         dest_tsx_path.write_text(tsx_code, encoding="utf-8")
 
-        if verbose:
-            click.echo(
-                f"Component written to {style(dest_tsx_path.name, fg='green', bold=True)}"
-            )
+        click.echo(
+            f"Component written to {style(dest_tsx_path.name, fg='green', bold=True)}"
+        )
 
     if not no_index_ts:
         index_ts_path = output_dir / "index.ts"
         index_ts_content = generate_index_file(svgs)
         index_ts_path.write_text(index_ts_content)
-        if verbose:
-            click.echo()
-            click.echo(
-                f"File {style('Index.ts', fg='green', bold=True)} written to {style(index_ts_path, fg='green', bold=True)}"
-            )
+        click.echo()
+        click.echo(
+            f"File {style('Index.ts', fg='green', bold=True)} written to {style(index_ts_path, fg='green', bold=True)}"
+        )
 
 
 if __name__ == "__main__":
