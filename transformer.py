@@ -119,7 +119,7 @@ def build_tsx_component(svg: Svg, header: str | None) -> str:
             continue
 
         buffer.write(ONE_SPACE_INDENT)
-        buffer.write(f"* {ascii_line}\n")
+        buffer.write(f"* {ascii_line.rstrip()}\n")
 
     buffer.write(ONE_SPACE_INDENT)
     buffer.write("* ```\n")
