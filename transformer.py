@@ -97,10 +97,10 @@ def build_tsx_component(svg: Svg, header: str | None) -> str:
     )
     buffer.write("\n")
 
-    buffer.write("import type { JSX } from 'solid-js';\n")
+    buffer.write("import type { ComponentProps } from 'solid-js';\n")
     buffer.write("\n")
 
-    buffer.write("interface IconProps extends JSX.SvgSVGAttributes<SVGSVGElement> {\n")
+    buffer.write("interface IconProps extends ComponentProps<'svg'> {\n")
     buffer.write(gen_indent(1))
     buffer.write("size?: string;\n")
     buffer.write("}\n")
