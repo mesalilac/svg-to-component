@@ -129,7 +129,7 @@ def build_tsx_component(svg: Svg, header: str | None) -> str:
 
     buffer.write(f"export const {svg.name} = (props: IconProps) => {{\n")
     buffer.write(gen_indent(1))
-    buffer.write("const [size, otherProps] = splitProps(props, ['size']);\n")
+    buffer.write("const [pickedProps, otherProps] = splitProps(props, ['size']);\n")
 
     buffer.write("\n")
 
@@ -148,7 +148,7 @@ def build_tsx_component(svg: Svg, header: str | None) -> str:
     for attr in svg.attrib:
         buffer.write(gen_indent(3))
         if attr == "width" or attr == "height":
-            buffer.write(f"{attr}={{size || '{svg.attrib[attr]}'}}\n")
+            buffer.write(f"{attr}={{pickedProps.size || '{svg.attrib[attr]}'}}\n")
         else:
             buffer.write(f"{attr}='{svg.attrib[attr]}'\n")
 
