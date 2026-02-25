@@ -97,7 +97,7 @@ def build_tsx_component(svg: Svg, header: str | None) -> str:
     )
     buffer.write("\n")
 
-    buffer.write("import type { ComponentProps } from 'solid-js';\n")
+    buffer.write("import { type ComponentProps, splitProps } from 'solid-js';\n")
     buffer.write("\n")
 
     buffer.write("interface IconProps extends ComponentProps<'svg'> {\n")
@@ -128,6 +128,10 @@ def build_tsx_component(svg: Svg, header: str | None) -> str:
     buffer.write("*/\n")
 
     buffer.write(f"export const {svg.name} = (props: IconProps) => {{\n")
+    buffer.write(gen_indent(1))
+    buffer.write("const [size, otherProps] = splitProps(props, ['size']);\n")
+
+    buffer.write("\n")
 
     buffer.write(gen_indent(1))
     buffer.write("return (\n")
@@ -144,7 +148,7 @@ def build_tsx_component(svg: Svg, header: str | None) -> str:
     for attr in svg.attrib:
         buffer.write(gen_indent(3))
         if attr == "width" or attr == "height":
-            buffer.write(f"{attr}={{props.size || '{svg.attrib[attr]}'}}\n")
+            buffer.write(f"{attr}={{size || '{svg.attrib[attr]}'}}\n")
         else:
             buffer.write(f"{attr}='{svg.attrib[attr]}'\n")
 
@@ -152,7 +156,7 @@ def build_tsx_component(svg: Svg, header: str | None) -> str:
     buffer.write("ref={props.ref}\n")
 
     buffer.write(gen_indent(3))
-    buffer.write("{...props}\n")
+    buffer.write("{...otherProps}\n")
 
     buffer.write(gen_indent(2))
     buffer.write(">\n")
