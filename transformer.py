@@ -62,13 +62,13 @@ def parse_svg(source_svg_path: Path) -> Svg:
 
     if width and height:
         if width == height:
-            root.attrib["width"] = "1em"
-            root.attrib["height"] = "1em"
+            root.attrib["width"] = "1.25rem"
+            root.attrib["height"] = "1.25rem"
         else:
             new_width: float = float(width) / float(height)
 
-            root.attrib["width"] = f"{new_width}em"
-            root.attrib["height"] = "1em"
+            root.attrib["width"] = f"{new_width}rem"
+            root.attrib["height"] = "1rem"
 
     ascii = svg_to_ascii(source_svg_path, width=24)
 
