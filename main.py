@@ -100,7 +100,7 @@ def main(
             )
             continue
 
-        dest_tsx_path.write_text(tsx_code, encoding="utf-8")
+        dest_tsx_path.write_text(tsx_code, encoding="utf-8", newline="\n")
 
         click.echo(
             f"Component written to {style(dest_tsx_path.name, fg='green', bold=True)}"
@@ -109,7 +109,7 @@ def main(
     if not no_index_ts:
         index_ts_path = output_dir / "index.ts"
         index_ts_content = generate_index_file(svgs)
-        index_ts_path.write_text(index_ts_content)
+        index_ts_path.write_text(index_ts_content, newline="\n")
         click.echo()
         click.echo(
             f"File {style('Index.ts', fg='green', bold=True)} written to {style(index_ts_path, fg='green', bold=True)}"
