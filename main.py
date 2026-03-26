@@ -77,18 +77,18 @@ def main(
         os.makedirs(output_dir)
 
     for source_svg_path in input_dir.rglob("*.svg"):
-        svg = parse_svg(source_svg_path)
-
         if flat:
-            relative_dir = "."
+            relative_dir = Path(".")
         else:
-            relative_dir = source_svg_path.parent.relative_to(input_dir).as_posix()
+            relative_dir = Path(
+                source_svg_path.parent.relative_to(input_dir).as_posix()
+            )
+
+        svg = parse_svg(source_svg_path, relative_dir)
 
         dest_tsx_path: Path = output_dir / relative_dir / f"{svg.name}.tsx"
 
         os.makedirs(dest_tsx_path.parent, exist_ok=True)
-
-        svg.relative_path = relative_dir
 
         svgs.append(svg)
 

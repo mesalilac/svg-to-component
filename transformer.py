@@ -29,7 +29,7 @@ def generate_index_file(svgs: list[Svg]) -> str:
         buffer.write("export * from './")
 
         if svg_item.relative_path != ".":
-            buffer.write(svg_item.relative_path)
+            buffer.write(str(svg_item.relative_path))
             buffer.write("/")
 
         buffer.write(f"{svg_item.name}")
@@ -40,8 +40,15 @@ def generate_index_file(svgs: list[Svg]) -> str:
     return content
 
 
-def parse_svg(source_svg_path: Path) -> Svg:
-    name = toPascalCase(source_svg_path.stem)
+def parse_svg(source_svg_path: Path, relative_dir: Path) -> Svg:
+    relative_dir_str = str(relative_dir)
+    if relative_dir_str == ".":
+        relative_dir_str = ""
+    else:
+        relative_dir_str = relative_dir_str.replace("\\", " ")
+        relative_dir_str = relative_dir_str.replace("/", " ")
+
+    name = toPascalCase(relative_dir_str + " " + source_svg_path.stem)
     tree = ET.parse(source_svg_path)
     root = tree.getroot()
     elements: list[ChildElement] = []
@@ -75,6 +82,7 @@ def parse_svg(source_svg_path: Path) -> Svg:
     return Svg(
         name=f"Icon{name}",
         attrib=root.attrib,
+        relative_path=relative_dir,
         ascii=ascii,
         elements=elements,
     )
