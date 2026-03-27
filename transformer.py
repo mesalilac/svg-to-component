@@ -48,7 +48,12 @@ def parse_svg(source_svg_path: Path, relative_dir: Path) -> Svg:
         relative_dir_str = relative_dir_str.replace("\\", " ")
         relative_dir_str = relative_dir_str.replace("/", " ")
 
-    name = toPascalCase(relative_dir_str + " " + source_svg_path.stem)
+    filename = source_svg_path.stem
+
+    if filename.startswith(relative_dir_str):
+        relative_dir_str = ""
+
+    name = toPascalCase(relative_dir_str + " " + filename)
     tree = ET.parse(source_svg_path)
     root = tree.getroot()
     elements: list[ChildElement] = []
