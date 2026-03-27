@@ -110,7 +110,9 @@ def build_tsx_component(svg: Svg, header: str | None) -> str:
     )
     buffer.write("\n")
 
-    buffer.write("import { type ComponentProps, splitProps } from 'solid-js';\n")
+    buffer.write(
+        "import { type ComponentProps, splitProps, type VoidComponent } from 'solid-js';\n"
+    )
     buffer.write("\n")
 
     buffer.write("interface IconProps extends ComponentProps<'svg'> {\n")
@@ -140,7 +142,7 @@ def build_tsx_component(svg: Svg, header: str | None) -> str:
     buffer.write(ONE_SPACE_INDENT)
     buffer.write("*/\n")
 
-    buffer.write(f"export const {svg.name} = (props: IconProps) => {{\n")
+    buffer.write(f"export const {svg.name}: VoidComponent<IconProps> = (props) => {{\n")
     buffer.write(gen_indent(1))
     buffer.write("const [pickedProps, otherProps] = splitProps(props, ['size']);\n")
 
