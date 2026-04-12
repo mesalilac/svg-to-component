@@ -3,7 +3,12 @@ from models import Svg
 import click
 from click import style
 from pathlib import Path
-from transformer import parse_svg, build_tsx_component, generate_index_file
+from transformer import (
+    parse_svg,
+    build_storybook_file,
+    build_tsx_component,
+    generate_index_file,
+)
 import shutil
 
 
@@ -51,6 +56,7 @@ import shutil
 @click.option(
     "--clean", "-c", is_flag=True, help="Remove and recreate output directory"
 )
+@click.option("--storybook", is_flag=True, help="Generate storybook files")
 def main(
     input_dir: Path,
     output_dir: Path,
@@ -59,6 +65,7 @@ def main(
     force: bool,
     flat: bool,
     clean: bool,
+    storybook: bool,
 ):
 
     svgs: list[Svg] = []
@@ -87,6 +94,7 @@ def main(
         svg = parse_svg(source_svg_path, relative_dir)
 
         dest_tsx_path: Path = output_dir / relative_dir / f"{svg.name}.tsx"
+        storybook_tsx_path = output_dir / relative_dir / f"{svg.name}.stories.tsx"
 
         os.makedirs(dest_tsx_path.parent, exist_ok=True)
 
@@ -103,8 +111,13 @@ def main(
         dest_tsx_path.write_text(tsx_code, encoding="utf-8", newline="\n")
 
         click.echo(
-            f"Component written to {style(dest_tsx_path.name, fg='green', bold=True)}"
+            f"Component written to {style(dest_tsx_path.name, fg='green', bold=True)}{f', {style(storybook_tsx_path.name, fg="magenta", bold=True)}' if storybook else ''}."
         )
+
+        if storybook:
+            storybook_tsx_path.write_text(
+                build_storybook_file(svg), encoding="utf-8", newline="\n"
+            )
 
     if not no_index_ts:
         index_ts_path = output_dir / "index.ts"

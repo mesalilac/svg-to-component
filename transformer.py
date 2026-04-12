@@ -51,7 +51,10 @@ def parse_svg(source_svg_path: Path, relative_dir: Path) -> Svg:
     filename = source_svg_path.stem
 
     if filename.startswith(relative_dir_str):
-        relative_dir_str = ""
+        filename = filename.removeprefix(relative_dir_str)
+
+    original_filename: str = toPascalCase(filename)
+    relative_dir_name: str = toPascalCase(" ".join(relative_dir_str.split("/")))
 
     name = toPascalCase(relative_dir_str + " " + filename)
     tree = ET.parse(source_svg_path)
@@ -88,6 +91,8 @@ def parse_svg(source_svg_path: Path, relative_dir: Path) -> Svg:
         name=f"Icon{name}",
         attrib=root.attrib,
         relative_path=relative_dir,
+        relative_dir_name=relative_dir_name,
+        original_filename=original_filename,
         ascii=ascii,
         elements=elements,
     )
@@ -193,3 +198,62 @@ def build_tsx_component(svg: Svg, header: str | None) -> str:
     content = buffer.getvalue()
     buffer.close()
     return content
+
+
+def build_storybook_file(svg: Svg) -> str:
+    b = StringIO()
+
+    b.write("import type { Meta, StoryObj } from 'storybook-solidjs-vite';\n\n")
+    b.write(f"import {{ {svg.name} }} from './{svg.name}';\n\n")
+
+    # meta ---
+    b.write("const meta = {\n")
+
+    b.write(gen_indent(1))
+    b.write(
+        f"title: 'Icon{f'/{svg.relative_dir_name}' if len(svg.relative_dir_name) > 0 else ''}{f'/{svg.original_filename}' if len(svg.original_filename) > 0 else ''}',\n"
+    )
+
+    b.write(gen_indent(1))
+    b.write(f"component: {svg.name},\n")
+
+    b.write(gen_indent(1))
+    b.write("parameters: {\n")
+
+    b.write(gen_indent(2))
+    b.write("layout: 'centered',\n")
+
+    b.write(gen_indent(1))
+    b.write("},\n")
+
+    b.write(f"}} satisfies Meta<typeof {svg.name}>;\n\n")
+    # --- meta
+
+    b.write("export default meta;\n")
+    b.write(f"type Story = StoryObj<typeof {svg.name}>;\n\n")
+
+    # story ---
+    b.write("export const Default: Story = {\n")
+
+    b.write(gen_indent(1))
+    b.write("args: {\n")
+
+    b.write(gen_indent(2))
+    b.write("size: '6rem',\n")
+
+    b.write(gen_indent(1))
+    b.write("},\n")
+
+    b.write("};\n")
+    # --- story
+
+    content = b.getvalue()
+    b.close()
+    return content
+
+
+# export const Default: Story = {
+#     args: {
+#         size: '6rem',
+#     },
+# };
