@@ -18,3 +18,11 @@ def toCamelCase(s: str) -> str:
     parts = s.split("-")
 
     return parts[0] + "".join(word.capitalize() for word in parts[1:])
+
+
+def is_number(s: str) -> bool:
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False

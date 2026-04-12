@@ -3,7 +3,7 @@ from io import StringIO
 from models import Svg, ChildElement
 import xml.etree.ElementTree as ET
 from ascii import svg_to_ascii
-from utils import toPascalCase, toHumanReadableLabel
+from utils import toPascalCase, toHumanReadableLabel, is_number
 
 DEFAULT_INDENT_BY = 4
 
@@ -50,11 +50,16 @@ def parse_svg(source_svg_path: Path, relative_dir: Path) -> Svg:
 
     filename = source_svg_path.stem
 
-    if filename.startswith(relative_dir_str):
+    if filename.startswith(f"{relative_dir_str}_") or filename.startswith(
+        f"{relative_dir_str}-"
+    ):
         filename = filename.removeprefix(relative_dir_str)
 
     original_filename: str = toPascalCase(filename)
     relative_dir_name: str = toPascalCase(" ".join(relative_dir_str.split("/")))
+
+    if is_number(original_filename):
+        original_filename = relative_dir_str + original_filename
 
     name = toPascalCase(relative_dir_str + " " + filename)
     tree = ET.parse(source_svg_path)
@@ -203,8 +208,15 @@ def build_tsx_component(svg: Svg, header: str | None) -> str:
 def build_storybook_file(svg: Svg) -> str:
     b = StringIO()
 
+    story_name = "Default"
+
+    if len(svg.original_filename) > 0:
+        story_name = svg.original_filename
+    elif len(svg.relative_dir_name) > 0:
+        story_name = svg.relative_dir_name
+
     b.write("import type { Meta, StoryObj } from 'storybook-solidjs-vite';\n\n")
-    b.write(f"import {{ {svg.name} }} from './{svg.name}';\n\n")
+    b.write(f"import {{ {svg.name} as IconComp }} from './{svg.name}';\n\n")
 
     # meta ---
     b.write("const meta = {\n")
@@ -215,7 +227,7 @@ def build_storybook_file(svg: Svg) -> str:
     )
 
     b.write(gen_indent(1))
-    b.write(f"component: {svg.name},\n")
+    b.write("component: IconComp,\n")
 
     b.write(gen_indent(1))
     b.write("parameters: {\n")
@@ -226,14 +238,14 @@ def build_storybook_file(svg: Svg) -> str:
     b.write(gen_indent(1))
     b.write("},\n")
 
-    b.write(f"}} satisfies Meta<typeof {svg.name}>;\n\n")
+    b.write("} satisfies Meta<typeof IconComp>;\n\n")
     # --- meta
 
     b.write("export default meta;\n")
-    b.write(f"type Story = StoryObj<typeof {svg.name}>;\n\n")
+    b.write("type Story = StoryObj<typeof IconComp>;\n\n")
 
     # story ---
-    b.write("export const Default: Story = {\n")
+    b.write(f"export const {story_name}: Story = {{\n")
 
     b.write(gen_indent(1))
     b.write("args: {\n")
@@ -250,10 +262,3 @@ def build_storybook_file(svg: Svg) -> str:
     content = b.getvalue()
     b.close()
     return content
-
-
-# export const Default: Story = {
-#     args: {
-#         size: '6rem',
-#     },
-# };
