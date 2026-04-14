@@ -245,14 +245,15 @@ def build_storybook_file(svg: Svg) -> str:
     b.write("type Story = StoryObj<typeof IconComp>;\n\n")
 
     # story ---
-    b.write(f"export const {story_name}: Story = {{\n")
+    b.write(f"export const Icon{story_name}: Story = {{\n")
+
+    b.write(gen_indent(1))
+    b.write(f"name: '{story_name}',\n")
 
     b.write(gen_indent(1))
     b.write("args: {\n")
-
     b.write(gen_indent(2))
     b.write("size: '6rem',\n")
-
     b.write(gen_indent(1))
     b.write("},\n")
 
