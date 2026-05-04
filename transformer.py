@@ -165,6 +165,9 @@ def build_tsx_component(svg: Svg, header: str | None) -> str:
     buffer.write("<svg\n")
 
     buffer.write(gen_indent(3))
+    buffer.write("class='shrink-0'\n")
+
+    buffer.write(gen_indent(3))
     buffer.write("role='img'\n")
 
     buffer.write(gen_indent(3))
